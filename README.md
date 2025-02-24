@@ -1,6 +1,6 @@
 # MERN dockerized
 
-This is simple template for fullstack application running Next on frontend and Express + MongoDB on backend. Everything is wrapped in docker-compose. Only thing you need is docker installed and terminal. 
+This is simple template for fullstack application running React Vite with Typescript on frontend and Express + MongoDB on backend. Everything is wrapped in docker-compose. Only thing you need is docker installed and terminal. 
 
 
 # How to run it?
