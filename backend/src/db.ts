@@ -20,9 +20,13 @@ const createSampleDocumentIfNotExist = async (db: Db) => {
 };
 
 export const connectDb = async () => {
-  await mongoClient.connect();
-  console.log('Connected successfully to server');
-  const db = mongoClient.db('test');
-  await createSampleDocumentIfNotExist(db);
-  return db;
+  try {
+    await mongoClient.connect();
+    console.log('Connected successfully to server');
+    const db = mongoClient.db('test');
+    await createSampleDocumentIfNotExist(db);
+    return db;
+  } catch (err) {
+    console.log('Connecting to database failed...');
+  }
 };

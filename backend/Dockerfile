@@ -1,27 +1,45 @@
+ARG PORT=4000
+
+FROM node:22.13.1-alpine as node
+
 #Build stage
-FROM node:22.13.1-alpine AS build
+FROM node AS builder
 
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json ./
 
-RUN npm install
+RUN npm i
 
 COPY . .
 
-EXPOSE 4000
-
 RUN npm run build
 
-#Production stage
-FROM node:22.13.1-alpine AS production
+EXPOSE ${PORT}
 
-WORKDIR /app
+ENTRYPOINT [ "npm", "run", "dev" ]
 
-COPY package*.json .
+#Final stage
+FROM node as final
 
-RUN npm ci --only=production
+ENV NODE_ENV production
 
-COPY --from=build /app/dist ./dist
+RUN apk --no-cache -U upgrade
 
-CMD ["node", "dist/index.js"]
+RUN mkdir -p /home/node/app/dist && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+RUN npm i -g pm2
+
+COPY package*.json process.yml ./
+
+USER node
+
+RUN npm i --only=production
+
+COPY --chown=node:node --from=builder /app/dist ./dist
+
+EXPOSE ${PORT}
+
+ENTRYPOINT ["pm2-runtime", "./process.yml"] 
